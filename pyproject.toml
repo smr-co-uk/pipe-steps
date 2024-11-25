@@ -1,0 +1,26 @@
+[project]
+name = "collect"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Peter", email = "peter.lappo@smr.co.uk" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.3",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = [
+    "tests/unit",
+]
+
