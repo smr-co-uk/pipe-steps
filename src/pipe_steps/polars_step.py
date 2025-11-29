@@ -1,6 +1,7 @@
 """Abstract base class for Polars DataFrame processing steps."""
 
 from abc import ABC, abstractmethod
+
 import polars as pl
 
 

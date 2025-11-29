@@ -1,18 +1,20 @@
-.PHONY: help clean test build install lint format check typecheck mypy pyright all
+.PHONY: help clean test build install lint format check typecheck mypy pyright coverage format-check all
 
 help:
 	@echo "Available targets:"
-	@echo "  make clean     - Remove build artifacts and cache"
-	@echo "  make test      - Run the test suite"
-	@echo "  make typecheck - Run all type checkers (mypy + pyright)"
-	@echo "  make mypy      - Run mypy type checker"
-	@echo "  make pyright   - Run pyright type checker"
-	@echo "  make lint      - Run linting (typecheck + format check)"
-	@echo "  make format    - Format code with isort and black"
-	@echo "  make check     - Run tests and linting"
-	@echo "  make build     - Build distributable package"
-	@echo "  make install   - Install package in editable mode"
-	@echo "  make all       - Clean, check, and build"
+	@echo "  make clean        - Remove build artifacts and cache"
+	@echo "  make test         - Run the test suite"
+	@echo "  make coverage     - Run tests and generate coverage report"
+	@echo "  make typecheck    - Run all type checkers (mypy + pyright)"
+	@echo "  make mypy         - Run mypy type checker"
+	@echo "  make pyright      - Run pyright type checker"
+	@echo "  make format       - Format code with isort and black"
+	@echo "  make format-check - Check formatting without modifying"
+	@echo "  make lint         - Run linting (typecheck + format check)"
+	@echo "  make check        - Run tests and linting"
+	@echo "  make build        - Build distributable package"
+	@echo "  make install      - Install package in editable mode"
+	@echo "  make all          - Clean, check, and build"
 
 clean:
 	rm -rf build/ dist/ *.egg-info .pytest_cache .coverage htmlcov .mypy_cache .ruff_cache
@@ -21,6 +23,10 @@ clean:
 
 test:
 	uv run pytest -v --cov=pipe_steps
+
+coverage:
+	uv run pytest --cov=pipe_steps --cov-report=html
+	@echo "✓ Coverage report: htmlcov/index.html"
 
 mypy:
 	uv run mypy src/pipe_steps
@@ -35,7 +41,11 @@ format:
 	uv run isort src/ tests/
 	uv run black src/ tests/
 
-lint: typecheck
+format-check:
+	uv run isort --check-only src/ tests/
+	uv run black --check src/ tests/
+
+lint: typecheck format-check
 	@echo "✓ Linting complete!"
 
 check: test lint

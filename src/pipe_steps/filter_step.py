@@ -1,6 +1,7 @@
 """Step that filters rows based on a column threshold."""
 
 import polars as pl
+
 from .polars_step import PolarsStep
 
 

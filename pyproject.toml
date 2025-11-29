@@ -13,6 +13,8 @@ dependencies = [
 
 [project.scripts]
 collect-package = "pipe_steps:main_ps"
+batch-pipeline = "pipe_steps.main_batch:main"
+path-pipeline = "pipe_steps.main_pipe:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -1,6 +1,7 @@
 """Step that drops all rows containing null values."""
 
 import polars as pl
+
 from .polars_step import PolarsStep
 
 
