@@ -162,3 +162,9 @@ cython_debug/
 #.idea/
 
 tmp/
+.idea
+.DS_Store
+/data_checkpoints/
+/batch_checkpoints/
+/batch_checkpoints_demo
+
