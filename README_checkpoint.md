@@ -7,17 +7,20 @@ A modular checkpoint-based pipeline system for Polars DataFrames that saves inte
 ```
 src/pipe_steps/
 ├── __init__.py                # Package exports
-├── polars_step.py             # PolarsStep abstract base class
-├── drop_nulls_step.py         # DropNullsStep implementation
-├── add_column_step.py         # AddColumnStep implementation
-├── filter_step.py             # FilterStep implementation
-├── checkpoint_pipeline.py     # CheckpointPipeline orchestrator
-├── main_checkpoint.py         # Example usage
+├── checkpoint/                # Checkpoint Pipeline Sub-Package
+│   ├── __init__.py
+│   ├── polars_step.py         # PolarsStep abstract base class
+│   ├── drop_nulls_step.py     # DropNullsStep implementation
+│   ├── add_column_step.py     # AddColumnStep implementation
+│   ├── filter_step.py         # FilterStep implementation
+│   ├── checkpoint_pipeline.py # CheckpointPipeline orchestrator
+│   └── main_checkpoint.py     # Example usage
 └── py.typed                   # Type hints marker
 
 tests/
 ├── unit/
-│   ├── test_checkpoint_pipeline.py  # Unit tests
+│   ├── checkpoint/
+│   │   └── test_checkpoint_pipeline.py  # Unit tests
 │   └── test_example.py
 └── test_data/
     └── large_data.csv         # Test dataset
@@ -138,13 +141,13 @@ class MyCustomStep(PolarsStep):
 
 ```bash
 # Run the demo script
-python -m pipe_steps.main_checkpoint
+python -m pipe_steps.checkpoint.main_checkpoint
 
 # Or via installed script
 checkpoint-pipeline
 
 # Run tests
-pytest tests/unit/test_checkpoint_pipeline.py -v
+pytest tests/unit/checkpoint/test_checkpoint_pipeline.py -v
 
 # Run tests with coverage
 make coverage

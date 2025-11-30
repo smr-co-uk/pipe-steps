@@ -12,9 +12,9 @@ dependencies = [
 ]
 
 [project.scripts]
-checkpoint-pipeline = "pipe_steps.main_checkpoint:main"
-batch-pipeline = "pipe_steps.main_batch:main"
-path-pipeline = "pipe_steps.main_pipe:main"
+checkpoint-pipeline = "pipe_steps.checkpoint.main_checkpoint:main"
+batch-pipeline = "pipe_steps.batch.main_batch:main"
+path-pipeline = "pipe_steps.path.main_pipe:main"
 
 [build-system]
 requires = ["hatchling"]

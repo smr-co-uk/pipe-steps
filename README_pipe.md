@@ -182,7 +182,7 @@ Unsupported files are ignored during discovery.
 
 ```bash
 # Run demonstration
-python -m pipe_steps.main_pipe
+python -m pipe_steps.path.main_pipe
 
 # Or via installed script
 path-pipeline

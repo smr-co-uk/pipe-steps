@@ -268,7 +268,8 @@ make check
 src/pipe_steps/
 ├── __init__.py                      # Package exports
 │
-├── Checkpoint Pipeline:
+├── checkpoint/ (Checkpoint Pipeline Sub-Package):
+│   ├── __init__.py
 │   ├── polars_step.py
 │   ├── checkpoint_pipeline.py
 │   ├── drop_nulls_step.py
@@ -276,7 +277,8 @@ src/pipe_steps/
 │   ├── filter_step.py
 │   └── main_checkpoint.py
 │
-├── Batch Pipeline:
+├── batch/ (Batch Pipeline Sub-Package):
+│   ├── __init__.py
 │   ├── batch.py
 │   ├── frontier.py
 │   ├── batch_step.py
@@ -286,7 +288,8 @@ src/pipe_steps/
 │   ├── filter_batch_step.py
 │   └── main_batch.py
 │
-├── Path Pipeline:
+├── path/ (Path Pipeline Sub-Package):
+│   ├── __init__.py
 │   ├── path_item.py
 │   ├── path_step.py
 │   ├── path_pipeline.py
