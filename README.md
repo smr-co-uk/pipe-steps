@@ -34,7 +34,7 @@ For processing datasets that fit in RAM with the ability to resume from any step
 
 **Quick Example:**
 ```python
-from pipe_steps import CheckpointPipeline, DropNullsStep, AddColumnStep
+from pipe_steps.checkpoint import CheckpointPipeline, DropNullsStep, AddColumnStep
 
 pipeline = CheckpointPipeline(
     steps=[
@@ -72,7 +72,7 @@ For processing datasets larger than available RAM by streaming batches with auto
 
 **Quick Example:**
 ```python
-from pipe_steps import BatchPipeline, DropNullsBatchStep
+from pipe_steps.batch import BatchPipeline, DropNullsBatchStep
 
 def batch_fetcher(batch_id, batch_size):
     # Fetch from SQL database
@@ -113,7 +113,7 @@ For processing lists of file/directory paths through discovery and filtering ste
 **Quick Example:**
 ```python
 from pathlib import Path
-from pipe_steps import PathPipeline, DiscoverFilesStep, FilterByTypeStep
+from pipe_steps.path import PathPipeline, DiscoverFilesStep, FilterByTypeStep
 
 pipeline = PathPipeline([
     DiscoverFilesStep("discover", recursive=True),
@@ -153,13 +153,13 @@ Each pipeline has a demonstration script:
 
 ```bash
 # Checkpoint Pipeline demo
-python -m pipe_steps.main
+python -m pipe_steps.checkpoint.main_checkpoint
 
 # Batch Pipeline demo
-python -m pipe_steps.main_batch
+python -m pipe_steps.batch.main_batch
 
 # Path Pipeline demo
-python -m pipe_steps.main_pipe
+python -m pipe_steps.path.main_pipe
 ```
 
 ## Core Components
@@ -201,6 +201,36 @@ Do you have a large dataset (>RAM)?
     │   └─ Resume from step? → Resume capability
     └─ NO → File discovery/filtering needed?
         └─ YES → Path Pipeline
+```
+
+## Package Organization
+
+This package is organized into three sub-packages, each focused on a specific pipeline type:
+
+### `pipe_steps.checkpoint`
+- **Purpose**: Checkpoint-based pipeline for in-memory data processing
+- **Classes**: `PolarsStep`, `CheckpointPipeline`, `DropNullsStep`, `AddColumnStep`, `FilterStep`
+- **Main**: `python -m pipe_steps.checkpoint.main_checkpoint`
+- **CLI**: `checkpoint-pipeline`
+
+### `pipe_steps.batch`
+- **Purpose**: Batch-based pipeline for streaming large datasets
+- **Classes**: `Batch`, `BatchStep`, `BatchPipeline`, `Frontier`, `DropNullsBatchStep`, `AddColumnBatchStep`, `FilterBatchStep`
+- **Main**: `python -m pipe_steps.batch.main_batch`
+- **CLI**: `batch-pipeline`
+
+### `pipe_steps.path`
+- **Purpose**: Path processing pipeline for file discovery and filtering
+- **Classes**: `PathItem`, `PathStep`, `PathPipeline`, `DiscoverFilesStep`, `FilterByTypeStep`
+- **Main**: `python -m pipe_steps.path.main_pipe`
+- **CLI**: `path-pipeline`
+
+All classes are re-exported from the main `pipe_steps` package, so you can import from either location:
+
+```python
+# Both work:
+from pipe_steps import CheckpointPipeline
+from pipe_steps.checkpoint import CheckpointPipeline
 ```
 
 ## Key Concepts
@@ -305,7 +335,7 @@ src/pipe_steps/
 ### Processing 100GB Database
 
 ```python
-from pipe_steps import BatchPipeline, DropNullsBatchStep, AddColumnBatchStep
+from pipe_steps.batch import BatchPipeline, DropNullsBatchStep, AddColumnBatchStep
 
 def sql_batch_fetcher(batch_id, batch_size):
     query = f"SELECT * FROM huge_table LIMIT {batch_size} OFFSET {batch_id * batch_size}"
@@ -336,7 +366,7 @@ result = pipeline.collect_results()
 ### Iterative Feature Engineering
 
 ```python
-from pipe_steps import CheckpointPipeline, AddColumnStep
+from pipe_steps.checkpoint import CheckpointPipeline, AddColumnStep
 
 pipeline = CheckpointPipeline(
     steps=[
@@ -362,7 +392,7 @@ result = pipeline.run(df, resume=True)  # Fast!
 ### Multi-File Processing
 
 ```python
-from pipe_steps import PathPipeline, DiscoverFilesStep, FilterByTypeStep
+from pipe_steps.path import PathPipeline, DiscoverFilesStep, FilterByTypeStep
 
 # Step 1: Find all CSV and Parquet files recursively
 path_pipeline = PathPipeline([
@@ -385,7 +415,7 @@ Extend with custom steps:
 
 ```python
 # Custom checkpoint step
-from pipe_steps import PolarsStep
+from pipe_steps.checkpoint import PolarsStep
 
 class NormalizeStep(PolarsStep):
     def process(self, df: pl.DataFrame) -> pl.DataFrame:
@@ -394,7 +424,7 @@ class NormalizeStep(PolarsStep):
         ])
 
 # Custom batch step
-from pipe_steps import BatchStep, Batch
+from pipe_steps.batch import BatchStep, Batch
 
 class CustomBatchStep(BatchStep):
     def process(self, batch: Batch) -> Batch:
@@ -402,7 +432,7 @@ class CustomBatchStep(BatchStep):
         return Batch(batch.batch_id, batch.start_row, batch.start_row + len(processed) - 1, processed)
 
 # Custom path step
-from pipe_steps import PathStep
+from pipe_steps.path import PathStep
 
 class ValidateFilesStep(PathStep):
     def process(self, items: list[PathItem]) -> list[PathItem]:

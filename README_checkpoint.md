@@ -45,7 +45,7 @@ pip install polars pytest
 
 ```python
 import polars as pl
-from pipe_steps import (
+from pipe_steps.checkpoint import (
     CheckpointPipeline,
     DropNullsStep,
     AddColumnStep,
@@ -75,6 +75,7 @@ Base class for all pipeline steps. Located in `polars_step.py`.
 ```python
 from pipe_steps import PolarsStep
 import polars as pl
+from pipe_steps.checkpoint import PolarsStep
 
 class PolarsStep(ABC):
     def __init__(self, name: str):
@@ -124,7 +125,7 @@ Main pipeline orchestrator. Located in `checkpoint_pipeline.py`.
 ## Creating Custom Steps
 
 ```python
-from pipe_steps import PolarsStep
+from pipe_steps.checkpoint import PolarsStep
 import polars as pl
 
 class MyCustomStep(PolarsStep):
@@ -165,7 +166,7 @@ The `large_data.csv` file contains 20 rows of test data:
 ### Basic Pipeline
 
 ```python
-from pipe_steps import CheckpointPipeline, DropNullsStep
+from pipe_steps.checkpoint import CheckpointPipeline, DropNullsStep
 import polars as pl
 
 pipeline = CheckpointPipeline(
