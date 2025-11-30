@@ -38,7 +38,7 @@ def batch_fetcher(batch_id: int, batch_size: int) -> Batch | None:
 ## Quick Start
 
 ```python
-from pipe_steps import (
+from pipe_steps.batch import (
     BatchPipeline,
     DropNullsBatchStep,
     AddColumnBatchStep
@@ -75,7 +75,7 @@ result = pipeline.collect_results()
 Create custom steps by extending `BatchStep`:
 
 ```python
-from pipe_steps import BatchStep, Batch
+from pipe_steps.batch import BatchStep, Batch
 
 class MyStep(BatchStep):
     def process(self, batch: Batch) -> Batch:
@@ -123,7 +123,7 @@ pipeline.run(resume=True)  # Continues from frontier
 
 ```python
 import sqlalchemy as sa
-from pipe_steps import BatchPipeline, DropNullsBatchStep
+from pipe_steps.batch import BatchPipeline, DropNullsBatchStep
 
 def sql_batch_fetcher(table_name, batch_size):
     engine = sa.create_engine("postgresql://...")

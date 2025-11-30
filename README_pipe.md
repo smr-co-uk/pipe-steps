@@ -44,7 +44,7 @@ result = pipeline.run(items)
 
 ```python
 from pathlib import Path
-from pipe_steps import PathPipeline, DiscoverFilesStep, FilterByTypeStep
+from pipe_steps.path import PathPipeline, DiscoverFilesStep, FilterByTypeStep
 
 # Create path items
 items = [PathItem(path=Path("./data"), item_type="directory")]
@@ -93,7 +93,7 @@ Directories always pass through.
 ## Custom Steps
 
 ```python
-from pipe_steps import PathStep, PathItem
+from pipe_steps.path import PathStep, PathItem
 
 class ValidateFilesStep(PathStep):
     def process(self, items: list[PathItem]) -> list[PathItem]:
@@ -205,7 +205,7 @@ Output: list[PathItem] (transformed)
 Path results can feed into batch or checkpoint pipelines:
 
 ```python
-from pipe_steps import PathPipeline, DiscoverFilesStep, BatchPipeline
+from pipe_steps.path import PathPipeline, DiscoverFilesStep, BatchPipeline
 
 # 1. Discover CSV files
 path_pipeline = PathPipeline([
