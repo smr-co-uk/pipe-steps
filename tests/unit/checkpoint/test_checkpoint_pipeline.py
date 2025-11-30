@@ -8,11 +8,13 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from pipe_steps.add_column_step import AddColumnStep
-from pipe_steps.checkpoint_pipeline import CheckpointPipeline
-from pipe_steps.drop_nulls_step import DropNullsStep
-from pipe_steps.filter_step import FilterStep
-from pipe_steps.polars_step import PolarsStep
+from pipe_steps.checkpoint import (
+    AddColumnStep,
+    CheckpointPipeline,
+    DropNullsStep,
+    FilterStep,
+    PolarsStep,
+)
 
 
 @pytest.fixture

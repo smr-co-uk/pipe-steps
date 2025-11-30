@@ -4,11 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from pipe_steps.discover_files_step import DiscoverFilesStep
-from pipe_steps.filter_by_type_step import FilterByTypeStep
-from pipe_steps.path_item import PathItem
-from pipe_steps.path_pipeline import PathPipeline
-from pipe_steps.path_step import PathStep
+from pipe_steps.path import (
+    DiscoverFilesStep,
+    FilterByTypeStep,
+    PathItem,
+    PathPipeline,
+    PathStep,
+)
 
 
 @pytest.fixture

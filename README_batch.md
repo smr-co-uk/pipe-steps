@@ -171,7 +171,7 @@ result = pipeline.collect_results()
 
 ```bash
 # Run demonstration
-python -m pipe_steps.main_batch
+python -m pipe_steps.batch.main_batch
 
 # Or via installed script
 batch-pipeline
