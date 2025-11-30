@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-collect-package = "pipe_steps:main_ps"
+checkpoint-pipeline = "pipe_steps.main_checkpoint:main"
 batch-pipeline = "pipe_steps.main_batch:main"
 path-pipeline = "pipe_steps.main_pipe:main"
 

@@ -12,7 +12,7 @@ src/pipe_steps/
 ├── add_column_step.py         # AddColumnStep implementation
 ├── filter_step.py             # FilterStep implementation
 ├── checkpoint_pipeline.py     # CheckpointPipeline orchestrator
-├── main.py                    # Example usage
+├── main_checkpoint.py         # Example usage
 └── py.typed                   # Type hints marker
 
 tests/
@@ -138,13 +138,16 @@ class MyCustomStep(PolarsStep):
 
 ```bash
 # Run the demo script
-python main.py
+python -m pipe_steps.main_checkpoint
+
+# Or via installed script
+checkpoint-pipeline
 
 # Run tests
-pytest test_checkpoint_pipeline.py -v
+pytest tests/unit/test_checkpoint_pipeline.py -v
 
 # Run tests with coverage
-pytest test_checkpoint_pipeline.py -v --cov=checkpoint_pipeline
+make coverage
 ```
 
 ## Test Data
