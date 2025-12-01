@@ -235,20 +235,17 @@ class TestEdgeCases:
         assert result.equals(test_data)
 
     def test_step_name_uniqueness(self, test_checkpoint_dir):
-        """Test that step names should be unique for proper checkpointing"""
-        # This is more of a documentation test -
-        # users should use unique step names
-        pipeline = CheckpointPipeline(
-            steps=[
-                DropNullsStep("step1"),
-                AddColumnStep("step2", "value", multiplier=2),
-            ],
-            checkpoint_dir=test_checkpoint_dir,
-        )
-
-        # Each step should have a unique name
-        names = [step.name for step in pipeline.steps]
-        assert len(names) == len(set(names)), "Step names should be unique"
+        """Test that creating a pipeline with duplicate step names raises an error"""
+        with pytest.raises(
+            ValueError, match="Duplicate step names are not allowed in the pipeline."
+        ):
+            CheckpointPipeline(
+                steps=[
+                    DropNullsStep("duplicate_name"),
+                    AddColumnStep("duplicate_name", "value", multiplier=2),
+                ],
+                checkpoint_dir=test_checkpoint_dir,
+            )
 
 
 if __name__ == "__main__":

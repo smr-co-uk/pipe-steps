@@ -43,6 +43,10 @@ class BatchPipeline:
         self.checkpoint_dir.mkdir(exist_ok=True, parents=True)
         self.frontier = Frontier.load(self._get_frontier_path())
 
+        step_names = [step.name for step in steps]
+        if len(step_names) != len(set(step_names)):
+            raise ValueError("Duplicate step names are not allowed in the pipeline.")
+
     def _get_frontier_path(self) -> Path:
         """Get path to frontier state file."""
         return self.checkpoint_dir / "frontier.json"
@@ -138,18 +142,11 @@ class BatchPipeline:
         Returns:
             Combined DataFrame of all processed batches
         """
-        dfs: list[pl.DataFrame] = []
-        batch_id = 0
-        while True:
-            path = self._get_batch_checkpoint_path(batch_id)
-            if not path.exists():
-                break
-            dfs.append(pl.read_parquet(path))
-            batch_id += 1
-
-        if not dfs:
+        checkpoint_files = sorted(self.checkpoint_dir.glob("batch_*.parquet"))
+        if not checkpoint_files:
             return pl.DataFrame()
-        return pl.concat(dfs)
+
+        return pl.read_parquet(checkpoint_files)
 
     def get_frontier(self) -> Frontier:
         """Get current frontier state."""

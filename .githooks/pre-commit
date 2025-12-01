@@ -1,0 +1,27 @@
+#!/bin/bash
+# Pre-commit hook that runs make validate before allowing commits
+#
+# To install this hook:
+#   git config core.hooksPath .githooks
+#
+# To bypass this hook (not recommended):
+#   git commit --no-verify
+
+set -e
+
+echo "🔍 Running pre-commit validation..."
+echo ""
+
+# Run make validate
+if ! make validate; then
+    echo ""
+    echo "❌ Pre-commit validation failed!"
+    echo ""
+    echo "Please fix the issues above and try again."
+    echo "To bypass this check (not recommended), use: git commit --no-verify"
+    exit 1
+fi
+
+echo ""
+echo "✅ Pre-commit validation passed!"
+echo ""
