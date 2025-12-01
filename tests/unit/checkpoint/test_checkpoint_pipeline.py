@@ -236,7 +236,9 @@ class TestEdgeCases:
 
     def test_step_name_uniqueness(self, test_checkpoint_dir):
         """Test that creating a pipeline with duplicate step names raises an error"""
-        with pytest.raises(ValueError, match="Duplicate step names are not allowed in the pipeline."):
+        with pytest.raises(
+            ValueError, match="Duplicate step names are not allowed in the pipeline."
+        ):
             CheckpointPipeline(
                 steps=[
                     DropNullsStep("duplicate_name"),
