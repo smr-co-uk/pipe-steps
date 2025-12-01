@@ -30,7 +30,6 @@
     - `checkpoint-pipeline` → `pipe_steps.checkpoint.main_checkpoint:main`
     - `batch-pipeline` → `pipe_steps.batch.main_batch:main`
     - `path-pipeline` → `pipe_steps.path.main_pipe:main`
-
 ---
 
 ## 0.1.1 (2025-12-01)
