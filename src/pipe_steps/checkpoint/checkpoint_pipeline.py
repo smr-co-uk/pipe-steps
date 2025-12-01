@@ -29,6 +29,10 @@ class CheckpointPipeline:
         self.checkpoint_dir = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(exist_ok=True, parents=True)
 
+        step_names = [step.name for step in steps]
+        if len(step_names) != len(set(step_names)):
+            raise ValueError("Duplicate step names are not allowed in the pipeline.")
+
     def _get_checkpoint_path(self, step_name: str) -> Path:
         """Get the path for a checkpoint file"""
         return self.checkpoint_dir / f"{step_name}.parquet"

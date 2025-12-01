@@ -268,3 +268,22 @@ class TestBatchPipeline:
         assert result.null_count().sum_horizontal()[0] == 0
         # Should have 17 rows (20 - 3 with nulls)
         assert len(result) == 17
+
+class TestEdgeCases:
+    """Test edge cases and error conditions"""
+
+    def test_step_name_uniqueness(self, batch_checkpoint_dir: Path) -> None:
+        """Test that creating a pipeline with duplicate step names raises an error"""
+
+        def dummy_fetcher(batch_id: int, batch_size: int) -> Batch | None:
+            return None
+
+        with pytest.raises(ValueError, match="Duplicate step names are not allowed in the pipeline."):
+            BatchPipeline(
+                steps=[
+                    DropNullsBatchStep("duplicate_name"),
+                    AddColumnBatchStep("duplicate_name", "value", multiplier=2),
+                ],
+                batch_fetcher=dummy_fetcher,
+                checkpoint_dir=str(batch_checkpoint_dir),
+            )
