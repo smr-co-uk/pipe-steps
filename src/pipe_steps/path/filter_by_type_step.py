@@ -26,7 +26,7 @@ class FilterByTypeStep(PathStep):
         """
         result: list[PathItem] = []
         for item in items:
-            if item.item_type == "directory":
+            if item.is_dir():
                 result.append(item)
             elif item.file_type in self.file_types:
                 result.append(item)

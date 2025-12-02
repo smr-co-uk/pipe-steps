@@ -24,11 +24,11 @@ class DiscoverFilesStep(PathStep):
         """Detect file type from extension."""
         suffix = path.suffix.lower()
         if suffix == ".parquet":
-            return "parquet"
+            return FileType.PARQUET
         elif suffix == ".csv":
-            return "csv"
+            return FileType.CSV
         elif suffix in (".xlsx", ".xls"):
-            return "xlsx"
+            return FileType.XLSX
         return None
 
     def process(self, items: list[PathItem]) -> list[PathItem]:
@@ -40,9 +40,9 @@ class DiscoverFilesStep(PathStep):
         result: list[PathItem] = []
 
         for item in items:
-            if item.item_type == "file":
+            if item.is_file():
                 result.append(item)
-            elif item.item_type == "directory":
+            elif item.is_dir():
                 # Keep the directory
                 result.append(item)
 
@@ -55,7 +55,6 @@ class DiscoverFilesStep(PathStep):
                             result.append(
                                 PathItem(
                                     path=file_path,
-                                    item_type="file",
                                     file_type=file_type,
                                 )
                             )

@@ -10,6 +10,7 @@ from pathlib import Path
 
 from . import (
     DiscoverFilesStep,
+    FileType,
     FilterByTypeStep,
     PathItem,
     PathPipeline,
@@ -61,7 +62,7 @@ def main() -> None:
     print("=" * 60)
     print(f"Searching in: {test_dir}\n")
 
-    items = [PathItem(path=test_dir, item_type="directory")]
+    items = [PathItem(path=test_dir)]
 
     pipeline = PathPipeline(
         steps=[
@@ -73,7 +74,7 @@ def main() -> None:
 
     print("\nDiscovered items:")
     for item in result:
-        if item.item_type == "file":
+        if item.is_file():
             print(f"  📄 {item.path.name} ({item.file_type})")
         else:
             print(f"  📁 {item.path.name}/")
@@ -84,19 +85,19 @@ def main() -> None:
     print("=" * 60)
     print(f"Searching in: {test_dir}\n")
 
-    items = [PathItem(path=test_dir, item_type="directory")]
+    items = [PathItem(path=test_dir)]
 
     pipeline = PathPipeline(
         steps=[
             DiscoverFilesStep("discover_recursive", recursive=True),
-            FilterByTypeStep("filter_data", ["csv", "parquet"]),
+            FilterByTypeStep("filter_data", [FileType.CSV, FileType.PARQUET]),
         ]
     )
 
     result = pipeline.run(items)
 
     print("\nFiltered results (CSV/Parquet only):")
-    data_files = [item for item in result if item.item_type == "file"]
+    data_files = [item for item in result if item.is_file()]
     for item in data_files:
         print(f"  📄 {item.path.relative_to(test_dir)} ({item.file_type})")
 
@@ -108,18 +109,18 @@ def main() -> None:
     print("=" * 60)
     print(f"Searching in: {test_dir}\n")
 
-    items = [PathItem(path=test_dir, item_type="directory")]
+    items = [PathItem(path=test_dir)]
 
     pipeline = PathPipeline(
         steps=[
             DiscoverFilesStep("discover_all", recursive=True),
-            FilterByTypeStep("filter_xlsx", ["xlsx"]),
+            FilterByTypeStep("filter_xlsx", [FileType.XLSX]),
         ]
     )
 
     result = pipeline.run(items)
 
-    excel_files = [item for item in result if item.item_type == "file"]
+    excel_files = [item for item in result if item.is_file()]
     print(f"\nExcel files found: {len(excel_files)}")
     for item in excel_files:
         print(f"  📊 {item.path.relative_to(test_dir)}")
@@ -131,14 +132,14 @@ def main() -> None:
 
     # Create items for specific files
     items = [
-        PathItem(path=test_dir / "data1.csv", item_type="file", file_type="csv"),
-        PathItem(path=test_dir / "dataset.parquet", item_type="file", file_type="parquet"),
-        PathItem(path=test_dir / "archive", item_type="directory"),
+        PathItem(path=test_dir / "data1.csv", file_type=FileType.CSV),
+        PathItem(path=test_dir / "dataset.parquet", file_type=FileType.PARQUET),
+        PathItem(path=test_dir / "archive"),
     ]
 
     print("\nInput items:")
     for item in items:
-        if item.item_type == "file":
+        if item.is_file():
             print(f"  📄 {item.path.name} ({item.file_type})")
         else:
             print(f"  📁 {item.path.name}/")
@@ -147,7 +148,7 @@ def main() -> None:
     pipeline = PathPipeline(
         steps=[
             DiscoverFilesStep("expand_dirs", recursive=False),
-            FilterByTypeStep("filter_data", ["csv", "parquet"]),
+            FilterByTypeStep("filter_data", [FileType.CSV, FileType.PARQUET]),
         ]
     )
 
@@ -155,7 +156,7 @@ def main() -> None:
 
     print("\nProcessed items:")
     for item in result:
-        if item.item_type == "file":
+        if item.is_file():
             print(f"  📄 {item.path.name} ({item.file_type})")
         else:
             print(f"  📁 {item.path.name}/")
