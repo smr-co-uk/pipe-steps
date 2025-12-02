@@ -27,9 +27,7 @@ class PathItem:
             self.path = Path(self.path)
 
         if self.is_file() and not isinstance(self.file_type, FileType):
-            raise ValueError(
-                f"file_type must be a FileType enum for files, got {self.file_type}"
-            )
+            raise ValueError(f"file_type must be a FileType enum for files, got {self.file_type}")
 
         if self.is_dir() and self.file_type is not None:
             raise ValueError("directories should not have a file_type")

@@ -10,7 +10,6 @@ from pipe_steps.path import (
     FilterByTypeStep,
     PathItem,
     PathPipeline,
-    PathStep,
 )
 
 
