@@ -16,9 +16,12 @@ Represents a file or directory with metadata:
 ```python
 PathItem(
     path=Path("data.csv"),
-    item_type="file",           # "file" or "directory"
-    file_type="csv"             # "parquet", "csv", "xlsx" (files only)
+    file_type=FileType.CSV      # FileType.PARQUET, FileType.CSV, FileType.XLSX (files only)
 )
+
+# Use Path methods to check type
+item.is_file()   # True for files
+item.is_dir()    # True for directories
 ```
 
 ### PathStep
@@ -35,7 +38,7 @@ Orchestrates multiple steps:
 ```python
 pipeline = PathPipeline([
     DiscoverFilesStep("find"),
-    FilterByTypeStep("filter", ["csv"])
+    FilterByTypeStep("filter", [FileType.CSV])
 ])
 result = pipeline.run(items)
 ```
@@ -44,15 +47,21 @@ result = pipeline.run(items)
 
 ```python
 from pathlib import Path
-from pipe_steps.path import PathPipeline, DiscoverFilesStep, FilterByTypeStep
+from pipe_steps.path import (
+    PathPipeline,
+    DiscoverFilesStep,
+    FilterByTypeStep,
+    PathItem,
+    FileType,
+)
 
 # Create path items
-items = [PathItem(path=Path("./data"), item_type="directory")]
+items = [PathItem(path=Path("./data"))]
 
 # Create pipeline
 pipeline = PathPipeline([
     DiscoverFilesStep("discover", recursive=True),
-    FilterByTypeStep("filter", ["csv", "parquet"])
+    FilterByTypeStep("filter", [FileType.CSV, FileType.PARQUET])
 ])
 
 # Run
@@ -60,7 +69,7 @@ result = pipeline.run(items)
 
 # Access results
 for item in result:
-    if item.item_type == "file":
+    if item.is_file():
         print(f"File: {item.path} ({item.file_type})")
 ```
 
@@ -84,7 +93,7 @@ Keeps only specified file types.
 ```python
 step = FilterByTypeStep(
     name="filter",
-    file_types=["csv", "parquet"]  # Types to keep
+    file_types=[FileType.CSV, FileType.PARQUET]  # Types to keep
 )
 ```
 
@@ -93,13 +102,13 @@ Directories always pass through.
 ## Custom Steps
 
 ```python
-from pipe_steps.path import PathStep, PathItem
+from pipe_steps.path import PathStep, PathItem, FileType
 
 class ValidateFilesStep(PathStep):
     def process(self, items: list[PathItem]) -> list[PathItem]:
         result = []
         for item in items:
-            if item.item_type == "file":
+            if item.is_file():
                 # Check if file exists
                 if item.path.exists():
                     result.append(item)
@@ -110,7 +119,7 @@ class ValidateFilesStep(PathStep):
 # Use it
 pipeline = PathPipeline([
     ValidateFilesStep("validate"),
-    FilterByTypeStep("filter", ["csv"])
+    FilterByTypeStep("filter", [FileType.CSV])
 ])
 ```
 
@@ -118,10 +127,10 @@ pipeline = PathPipeline([
 
 ### Find all data files
 ```python
-items = [PathItem(path=Path("./data"), item_type="directory")]
+items = [PathItem(path=Path("./data"))]
 pipeline = PathPipeline([
     DiscoverFilesStep("discover", recursive=True),
-    FilterByTypeStep("filter", ["csv", "parquet"])
+    FilterByTypeStep("filter", [FileType.CSV, FileType.PARQUET])
 ])
 result = pipeline.run(items)
 ```
@@ -129,22 +138,22 @@ result = pipeline.run(items)
 ### Process specific files and expand directories
 ```python
 items = [
-    PathItem(path=Path("file1.csv"), item_type="file", file_type="csv"),
-    PathItem(path=Path("./backup"), item_type="directory")
+    PathItem(path=Path("file1.csv"), file_type=FileType.CSV),
+    PathItem(path=Path("./backup"))
 ]
 pipeline = PathPipeline([
     DiscoverFilesStep("expand_dirs"),
-    FilterByTypeStep("keep_data", ["csv"])
+    FilterByTypeStep("keep_data", [FileType.CSV])
 ])
 result = pipeline.run(items)
 ```
 
 ### Find Excel files only
 ```python
-items = [PathItem(path=Path("./reports"), item_type="directory")]
+items = [PathItem(path=Path("./reports"))]
 pipeline = PathPipeline([
     DiscoverFilesStep("discover", recursive=True),
-    FilterByTypeStep("filter", ["xlsx"])
+    FilterByTypeStep("filter", [FileType.XLSX])
 ])
 result = pipeline.run(items)
 ```
@@ -163,8 +172,9 @@ Unsupported files are ignored during discovery.
 
 **PathItem:**
 - `path: Path` - File or directory path
-- `item_type: Literal["file", "directory"]` - Type indicator
 - `file_type: FileType | None` - File type (files only)
+- `is_file() -> bool` - Check if this item is a file
+- `is_dir() -> bool` - Check if this item is a directory
 
 **PathStep:**
 - `process(items: list[PathItem]) -> list[PathItem]` - Transform items
