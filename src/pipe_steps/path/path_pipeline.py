@@ -16,15 +16,15 @@ class PathPipeline:
         """
         self.steps = steps
 
-    def run(self, items: list[PathItem]) -> list[PathItem]:
+    def run(self, items: dict[str, PathItem]) -> dict[str, PathItem]:
         """
-        Run the pipeline on a list of path items.
+        Run the pipeline on a dictionary of named path items.
 
         Args:
-            items: Initial list of PathItem objects
+            items: Initial dictionary mapping names to PathItem objects
 
         Returns:
-            Processed list of PathItem objects
+            Processed dictionary mapping names to PathItem objects
         """
         result = items
 

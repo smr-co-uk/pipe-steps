@@ -31,32 +31,34 @@ class DiscoverFilesStep(PathStep):
             return FileType.XLSX
         return None
 
-    def process(self, items: list[PathItem]) -> list[PathItem]:
+    def process(self, items: dict[str, PathItem]) -> dict[str, PathItem]:
         """
         Discover files in directories.
 
-        Keeps files as-is and expands directories to their contents.
+        Keeps files as-is and expands directories by adding new entries
+        for discovered files. Directory entries are kept in the output.
+        New file entries use the file path string as the key.
         """
-        result: list[PathItem] = []
+        result: dict[str, PathItem] = {}
 
-        for item in items:
+        for name, item in items.items():
             if item.is_file():
-                result.append(item)
+                # Keep files as-is
+                result[name] = item
             elif item.is_dir():
                 # Keep the directory
-                result.append(item)
+                result[name] = item
 
-                # Find files in directory
+                # Find files in directory and add them with path-based keys
                 pattern = "**/*" if self.recursive else "*"
                 for file_path in item.path.glob(pattern):
                     if file_path.is_file():
                         file_type = self._detect_file_type(file_path)
                         if file_type:
-                            result.append(
-                                PathItem(
-                                    path=file_path,
-                                    file_type=file_type,
-                                )
+                            # Use the file path string as the key
+                            result[str(file_path)] = PathItem(
+                                path=file_path,
+                                file_type=file_type,
                             )
 
         return result
