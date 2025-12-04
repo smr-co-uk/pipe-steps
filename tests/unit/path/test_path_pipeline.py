@@ -79,17 +79,17 @@ class TestFilterByTypeStep:
         (tmp_path / "b.parquet").touch()
         (tmp_path / "c.csv").touch()
 
-        items = [
-            PathItem(path=tmp_path / "a.csv", file_type=FileType.CSV),
-            PathItem(path=tmp_path / "b.parquet", file_type=FileType.PARQUET),
-            PathItem(path=tmp_path / "c.csv", file_type=FileType.CSV),
-        ]
+        items = {
+            "a": PathItem(path=tmp_path / "a.csv", file_type=FileType.CSV),
+            "b": PathItem(path=tmp_path / "b.parquet", file_type=FileType.PARQUET),
+            "c": PathItem(path=tmp_path / "c.csv", file_type=FileType.CSV),
+        }
 
         step = FilterByTypeStep("filter_csv", [FileType.CSV])
         result = step.process(items)
 
         assert len(result) == 2
-        assert all(item.file_type == FileType.CSV for item in result)
+        assert all(item.file_type == FileType.CSV for item in result.values())
 
     def test_filter_multiple_types(self, tmp_path: Path) -> None:
         """Test filtering multiple file types."""
@@ -98,17 +98,17 @@ class TestFilterByTypeStep:
         (tmp_path / "b.parquet").touch()
         (tmp_path / "c.xlsx").touch()
 
-        items = [
-            PathItem(path=tmp_path / "a.csv", file_type=FileType.CSV),
-            PathItem(path=tmp_path / "b.parquet", file_type=FileType.PARQUET),
-            PathItem(path=tmp_path / "c.xlsx", file_type=FileType.XLSX),
-        ]
+        items = {
+            "a": PathItem(path=tmp_path / "a.csv", file_type=FileType.CSV),
+            "b": PathItem(path=tmp_path / "b.parquet", file_type=FileType.PARQUET),
+            "c": PathItem(path=tmp_path / "c.xlsx", file_type=FileType.XLSX),
+        }
 
         step = FilterByTypeStep("filter", [FileType.CSV, FileType.PARQUET])
         result = step.process(items)
 
         assert len(result) == 2
-        assert not any(item.file_type == FileType.XLSX for item in result)
+        assert not any(item.file_type == FileType.XLSX for item in result.values())
 
     def test_filter_keeps_directories(self, tmp_path: Path) -> None:
         """Test that directories are always kept."""
@@ -117,18 +117,18 @@ class TestFilterByTypeStep:
         (tmp_path / "dir2").mkdir()
         (tmp_path / "a.csv").touch()
 
-        items = [
-            PathItem(path=tmp_path / "dir1"),
-            PathItem(path=tmp_path / "a.csv", file_type=FileType.CSV),
-            PathItem(path=tmp_path / "dir2"),
-        ]
+        items = {
+            "dir1": PathItem(path=tmp_path / "dir1"),
+            "a": PathItem(path=tmp_path / "a.csv", file_type=FileType.CSV),
+            "dir2": PathItem(path=tmp_path / "dir2"),
+        }
 
         step = FilterByTypeStep("filter", [FileType.PARQUET])  # Only keep parquet
         result = step.process(items)
 
         # Should have 2 directories + 0 parquet files
         assert len(result) == 2
-        assert all(item.is_dir() for item in result)
+        assert all(item.is_dir() for item in result.values())
 
 
 class TestDiscoverFilesStep:
@@ -136,27 +136,27 @@ class TestDiscoverFilesStep:
 
     def test_discover_non_recursive(self, test_directory: Path) -> None:
         """Test discovering files without recursion."""
-        items = [PathItem(path=test_directory)]
+        items = {"test_dir": PathItem(path=test_directory)}
 
         step = DiscoverFilesStep("discover", recursive=False)
         result = step.process(items)
 
         # Should have the directory + 3 files in root
         assert len(result) == 4  # 1 dir + 3 supported files
-        file_names = [item.path.name for item in result if item.is_file()]
+        file_names = [item.path.name for item in result.values() if item.is_file()]
         assert "file1.csv" in file_names
         assert "file2.parquet" in file_names
         assert "file3.xlsx" in file_names
 
     def test_discover_recursive(self, test_directory: Path) -> None:
         """Test discovering files with recursion."""
-        items = [PathItem(path=test_directory)]
+        items = {"test_dir": PathItem(path=test_directory)}
 
         step = DiscoverFilesStep("discover", recursive=True)
         result = step.process(items)
 
         # Should find all files including nested
-        files = [item for item in result if item.is_file()]
+        files = [item for item in result.values() if item.is_file()]
         file_names = [item.path.name for item in files]
 
         assert "file1.csv" in file_names
@@ -166,13 +166,13 @@ class TestDiscoverFilesStep:
     def test_discover_keeps_files(self, test_directory: Path) -> None:
         """Test that files are kept as-is."""
         csv_file = test_directory / "file1.csv"
-        items = [PathItem(path=csv_file, file_type=FileType.CSV)]
+        items = {"csv": PathItem(path=csv_file, file_type=FileType.CSV)}
 
         step = DiscoverFilesStep("discover")
         result = step.process(items)
 
         assert len(result) == 1
-        assert result[0].path == csv_file
+        assert result["csv"].path == csv_file
 
 
 class TestPathPipeline:
@@ -180,7 +180,7 @@ class TestPathPipeline:
 
     def test_pipeline_execution(self, test_directory: Path) -> None:
         """Test pipeline execution with multiple steps."""
-        items = [PathItem(path=test_directory)]
+        items = {"test_dir": PathItem(path=test_directory)}
 
         pipeline = PathPipeline(
             steps=[
@@ -192,7 +192,7 @@ class TestPathPipeline:
         result = pipeline.run(items)
 
         # Should have the directory + filtered files
-        files = [item for item in result if item.is_file()]
+        files = [item for item in result.values() if item.is_file()]
         # Discovery found: file1.csv, file2.parquet, file3.xlsx
         # Filter kept only: file1.csv, file2.parquet (2 files)
         assert len(files) == 2

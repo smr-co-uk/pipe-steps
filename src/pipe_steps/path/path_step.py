@@ -12,14 +12,15 @@ class PathStep(ABC):
         self.name = name
 
     @abstractmethod
-    def process(self, items: list[PathItem]) -> list[PathItem]:
+    def process(self, items: dict[str, PathItem]) -> dict[str, PathItem]:
         """
-        Process a list of path items and return the result.
+        Process a dictionary of named path items and return the result.
 
         Args:
-            items: List of PathItem objects to process
+            items: Dictionary mapping names to PathItem objects
 
         Returns:
-            List of PathItem objects (may be modified, added, or filtered)
+            Dictionary mapping names to PathItem objects
+            (may be modified, added, removed, or have keys renamed)
         """
         pass
